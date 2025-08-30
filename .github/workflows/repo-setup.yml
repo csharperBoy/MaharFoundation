@@ -1,0 +1,50 @@
+name: Repo setup
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Create labels
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cat > create_labels.py <<'PY'
+import os, json, sys
+import requests
+repo = os.environ['GITHUB_REPOSITORY']
+token = os.environ['GITHUB_TOKEN']
+headers = {'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json'}
+labels = json.load(open('.github/labels.json'))
+for l in labels:
+    resp = requests.post('https://api.github.com/repos/' + repo + '/labels', headers=headers, json=l)
+    print(resp.status_code, resp.text)
+PY
+        python create_labels.py
+
+    - name: Configure branch protection (main)
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cat > protect_branch.py <<'PY'
+import os, requests, json
+repo = os.environ['GITHUB_REPOSITORY']
+token = os.environ['GITHUB_TOKEN']
+headers = {'Authorization': 'token ' + token, 'Accept': 'application/vnd.github+json'}
+url = 'https://api.github.com/repos/' + repo + '/branches/main/protection'
+body = {
+  "required_status_checks": None,
+  "enforce_admins": True,
+  "required_pull_request_reviews": {"required_approving_review_count": 1},
+  "restrictions": None,
+  "required_linear_history": True
+}
+resp = requests.put(url, headers=headers, json=body)
+print(resp.status_code, resp.text)
+PY
+        python protect_branch.py
