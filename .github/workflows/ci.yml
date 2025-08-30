@@ -10,24 +10,24 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0.x'
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: csharp, javascript
-    - name: Run CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      # CodeQL will upload results to GitHub Code Scanning; keep as informational for initial setup
-    - name: Security Audit (non-blocking)
-      run: dotnet list package --vulnerable --severity high || true
-      continue-on-error: true
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: csharp, javascript
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        # CodeQL will upload results to GitHub Code Scanning; keep as informational for initial setup
+      - name: Security Audit (non-blocking)
+        run: dotnet list package --vulnerable --severity high || true
+        continue-on-error: true
