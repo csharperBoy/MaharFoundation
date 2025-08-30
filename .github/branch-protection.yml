@@ -1,0 +1,22 @@
+rules:
+  - pattern: main
+    required_approving_review_count: 1
+    require_code_owner_reviews: true
+    required_status_checks:
+      contexts:
+        - build-and-test
+      strict: true
+    enforce_admins: false
+    required_linear_history: true
+    allow_force_pushes: false
+    allow_deletions: false
+    
+  - pattern: develop
+    required_approving_review_count: 1
+    require_code_owner_reviews: false
+    required_status_checks:
+      contexts:
+        - build-and-test
+      strict: false
+    allow_force_pushes: false
+    allow_deletions: false

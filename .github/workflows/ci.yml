@@ -21,3 +21,13 @@ jobs:
       run: dotnet build --no-restore --configuration Release
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: csharp, javascript
+    - name: Run CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      # CodeQL will upload results to GitHub Code Scanning; keep as informational for initial setup
+    - name: Security Audit (non-blocking)
+      run: dotnet list package --vulnerable --severity high || true
+      continue-on-error: true
